@@ -25,7 +25,15 @@ SECRET_KEY = 'django-insecure-p(v@l)h7i8acf(0e8n$f)qw%*-mqlwqira_28-s%n6lalsv&ow
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'billing-mr6t.onrender.com',
+    '127.0.0.1',  # for local dev
+    'localhost',
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://billing-mr6t.onrender.com",
+]
 
 
 # Application definition
