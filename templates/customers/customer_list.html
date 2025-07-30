@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Customer List</h3>
+<a href="{% url 'customer_add' %}" class="btn btn-success mb-2">➕Add Customer</a>
+<table class="table table-bordered table-hover">
+    <thead><tr><th>Name</th><th>GSTIN</th><th>Contact</th><th>Actions</th></tr></thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.name }}</td>
+            <td>{{ customer.gstin }}</td>
+            <td>{{ customer.contact }}</td>
+            <td>
+                <a href="{% url 'customer_edit' customer.id %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'customer_delete' customer.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

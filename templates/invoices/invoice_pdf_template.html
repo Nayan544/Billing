@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Invoice #{{ invoice.id }}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 40px;
+            background-color: #fff;
+            color: #333;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        p {
+            font-size: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+        }
+
+        table, th, td {
+            border: 1px solid #dee2e6;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: center;
+            font-size: 15px;
+        }
+
+        thead {
+            background-color: #f8f9fa;
+        }
+
+        tr:last-child td {
+            font-weight: bold;
+        }
+
+        .invoice-meta {
+            margin-bottom: 20px;
+        }
+
+        .invoice-meta strong {
+            display: inline-block;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Invoice #{{ invoice.id }}</h2>
+
+    <div class="invoice-meta">
+        <p><strong>Customer:</strong> {{ invoice.customer.name }}</p>
+        <p><strong>Date:</strong> {{ invoice.created_at|date:"d M Y" }}</p>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Qty</th>
+                <th>Unit</th>
+                <th>Tax</th>
+                <th>Discount</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in invoice.items.all %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.unit_price }}</td>
+                <td>{{ item.tax_amount }}</td>
+                <td>{{ item.discount_amount }}</td>
+                <td>{{ item.total_price }}</td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="5" align="right"><strong>Grand Total</strong></td>
+                <td><strong>{{ invoice.total_amount }}</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

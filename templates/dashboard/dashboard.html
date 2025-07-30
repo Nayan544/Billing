@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Dashboard</h3>
+
+<div class="row mb-4">
+    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Total Revenue:</strong> ₹{{ total_revenue }}</div></div>
+    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Invoices:</strong> {{ total_invoices }}</div></div>
+    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Customers:</strong> {{ total_customers }}</div></div>
+    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Products:</strong> {{ total_products }}</div></div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <canvas id="monthlyChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="topProductChart"></canvas>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+const monthCtx = document.getElementById('monthlyChart').getContext('2d');
+new Chart(monthCtx, {
+    type: 'bar',
+    data: {
+        labels: {{ month_labels|safe }},
+        datasets: [{
+            label: 'Monthly Sales (₹)',
+            data: {{ monthly_sales|safe }},
+            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+        }]
+    },
+});
+
+const productCtx = document.getElementById('topProductChart').getContext('2d');
+new Chart(productCtx, {
+    type: 'pie',
+    data: {
+        labels: {{ product_labels|safe }},
+        datasets: [{
+            label: 'Top Products',
+            data: {{ product_qty|safe }},
+            backgroundColor: ['#f66', '#6f6', '#66f', '#fc3', '#3cf']
+        }]
+    },
+});
+</script>
+{% endblock %}

@@ -1,0 +1,48 @@
+<!-- templates/products/product_list.html -->
+{% extends 'base.html' %}
+{% block content %}
+<h3>Product List</h3>
+<a href="{% url 'product_add' %}" class="btn btn-success mb-2">➕Add Product</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Name</th><th>Price</th><th>Tax %</th><th>Discount</th><th>Stock</th><th>Barcode </th><th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.tax_percent }}</td>
+            <td>{{ product.discount }}</td>
+            <td>{{ product.stock }}</td>
+            <td>
+                {% if product.barcode_image %}
+                    <!-- Barcode hidden initially -->
+                    <a style="cursor: pointer;" onclick="toggleBarcode('{{ product.id }}')">Show Barcode</a>
+                    <div id="barcode-{{ product.id }}" style="display:none; margin-top: 5px;">
+                        <img src="{{ product.barcode_image.url }}" width="120">
+                    </div>
+                {% else %}
+                    Not generated
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'product_edit' product.id %}" class="btn btn-sm btn-warning">Edit</a>
+                <a href="{% url 'product_delete' product.id %}" class="btn btn-sm btn-danger">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6" class="text-center">No products found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+<script>
+function toggleBarcode(id) {
+    const div = document.getElementById("barcode-" + id);
+    div.style.display = div.style.display === "none" ? "block" : "none";
+}
+</script>
+{% endblock %}

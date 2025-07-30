@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block content %}
+<!-- <style>
+    h3 {
+    color: #333;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+        text-align: center;
+    }
+
+    .table thead {
+        background-color: #f8f9fa;
+    }
+
+    .btn-sm {
+        padding: 2px 10px;
+        font-size: 0.85rem;
+    }
+
+    select.form-select {
+        border-radius: 8px;
+    }
+
+    .container {
+        max-width: 1100px;
+    }
+
+</style> -->
+<div class="container mt-4">
+    <h3 class="fw-bold mb-4">🧾 Invoices</h3>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <form method="get" class="w-25">
+            <select name="filter" onchange="this.form.submit()" class="form-select">
+                <option value="">All Time</option>
+                <option value="7days" {% if filter_value == '7days' %}selected{% endif %}>Last 7 Days</option>
+                <option value="1month" {% if filter_value == '1month' %}selected{% endif %}>Last 1 Month</option>
+                <option value="6months" {% if filter_value == '6months' %}selected{% endif %}>Last 6 Months</option>
+            </select>
+        </form>
+
+        <div>
+            <a href="{% url 'invoice_create' %}" class="btn btn-success me-2">➕New Invoice</a>
+            <a href="{% url 'export_invoices_excel' %}" class="btn btn-outline-success">📤 Export Excel</a>
+        </div>
+    </div>
+
+    <table class="table table-bordered shadow-sm">
+        <thead class="table-light">
+            <tr>
+                <th>#</th>
+                <th>Customer</th>
+                <th>Date</th>
+                <th>Total</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+            <tr>
+                <td>{{ invoice.id }}</td>
+                <td>{{ invoice.customer.name }}</td>
+                <td>{{ invoice.created_at|date:"Y-m-d" }}</td>
+                <td>₹{{ invoice.total_amount }}</td>
+                <td>
+                    <a href="{% url 'invoice_detail' invoice.id %}" class="btn btn-sm btn-primary me-1">View</a>
+                    <a href="{% url 'invoice_pdf' invoice.id %}" class="btn btn-sm btn-success">PDF</a>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center text-muted">No invoices found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

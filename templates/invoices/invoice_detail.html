@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Invoice #{{ invoice.id }}</h3>
+<p><strong>Customer:</strong> {{ invoice.customer.name }}</p>
+<p><strong>Date:</strong> {{ invoice.created_at }}</p>
+
+<table class="table table-bordered">
+    <thead><tr><th>Product</th><th>Qty</th><th>Unit Price</th><th>Tax</th><th>Discount</th><th>Total</th></tr></thead>
+    <tbody>
+        {% for item in invoice.items.all %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.unit_price }}</td>
+            <td>{{ item.tax_amount }}</td>
+            <td>{{ item.discount_amount }}</td>
+            <td>{{ item.total_price }}</td>
+        </tr>
+        {% endfor %}
+        <tr><th colspan="5" class="text-end">Grand Total</th><th>{{ invoice.total_amount }}</th></tr>
+    </tbody>
+</table>
+<a href="{% url 'invoice_add_item' invoice.id %}" class="btn btn-success">➕Add Item</a>
+<a href="{% url 'invoice_list' %}" class="btn btn-secondary">◀Back to List</a>
+{% endblock %}

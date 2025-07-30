@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<h3>Create Invoice</h3>
+<form method="post">
+    {% csrf_token %}
+    <div class="card p-3 mb-3 shadow">
+        <h5>Customer Info</h5>
+        {{ form.as_p }}
+    </div>
+
+    <div class="card p-3 shadow mb-3">
+        <h5>Invoice Items</h5>
+        {{ formset.management_form }}
+        <table class="table">
+            <thead><tr><th>Product</th><th>Quantity</th><th>Delete?</th></tr></thead>
+            <tbody>
+            {% for form in formset %}
+                <tr>
+                    <td>{{ form.product }}</td>
+                    <td>{{ form.quantity }}</td>
+                    <td>{{ form.DELETE }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <button type="submit" class="btn btn-success">Save Invoice</button>
+    </div>
+    <a href="{% url 'invoice_list' %}" class="btn btn-secondary">Back to List</a>
+</form>
+{% endblock %}
