@@ -1,24 +1,93 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block content %}
-<h3>Dashboard</h3>
+<h3>📊Dashboard</h3>
 
+<!-- Dashboard Cards -->
 <div class="row mb-4">
-    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Total Revenue:</strong> ₹{{ total_revenue }}</div></div>
-    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Invoices:</strong> {{ total_invoices }}</div></div>
-    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Customers:</strong> {{ total_customers }}</div></div>
-    <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Products:</strong> {{ total_products }}</div></div>
+  <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Total Revenue:</strong> ₹{{ total_revenue }}</div></div>
+  <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Invoices:</strong> {{ total_invoices }}</div></div>
+  <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Customers:</strong> {{ total_customers }}</div></div>
+  <div class="col-md-3"><div class="card p-3 bg-light shadow"><strong>Products:</strong> {{ total_products }}</div></div>
 </div>
 
-<div class="row">
+<!-- 🔍 Search Box -->
+<h4>🔍Search</h4>
+<form method="get" class="mb-4" style="width: 356px;">
+  <div class="input-group">
+    <input type="text" name="q" class="form-control" placeholder="Search Customer or Product...">
+    <button type="submit" class="btn btn-light" style="border-color:#dee2e6">🔍</button>
+  </div>
+</form>
+
+
+<!-- 🎯 Customer Result -->
+{% if customer_result %}
+<div class="card mb-4 p-3 shadow">
+  <h5>Customer: {{ customer_result.name }}</h5>
+  <p><strong>Contact:</strong> {{ customer_result.contact }}</p>
+  <p><strong>GSTIN:</strong> {{ customer_result.gstin }}</p>
+
+  <h6 class="mt-3">Invoices:</h6>
+  <table class="table table-bordered">
+    <thead><tr><th>ID</th><th>Date</th><th>Total</th></tr></thead>
+    <tbody>
+    {% for inv in customer_invoices %}
+      <tr>
+        <td>{{ inv.id }}</td>
+        <td>{{ inv.created_at|date:"Y-m-d" }}</td>
+        <td>{{ inv.total_amount }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="3">No invoices found.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- 📦 Product Result -->
+{% if product_result %}
+<div class="card mb-4 p-3 shadow">
+  <h5>Product: {{ product_result.name }}</h5>
+  <p><strong>Price:</strong> ₹{{ product_result.price }}</p>
+  <p><strong>Tax %:</strong> {{ product_result.tax_percent }}</p>
+  <p><strong>Discount:</strong> {{ product_result.discount }}</p>
+  <p><strong>Stock:</strong> {{ product_result.stock }}</p>
+
+  <h6 class="mt-3">Used in Invoices:</h6>
+  <table class="table table-bordered">
+    <thead><tr><th>Invoice</th><th>Customer</th><th>Qty</th><th>Total</th></tr></thead>
+    <tbody>
+    {% for item in product_invoice_items %}
+      <tr>
+        <td>{{ item.invoice.id }}</td>
+        <td>{{ item.invoice.customer.name }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.total_price }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">Not used in any invoice.</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<!-- 📊 Dashboard Charts -->
+<div class="row mt-5">
     <div class="col-md-6">
-        <canvas id="monthlyChart"></canvas>
+      <canvas id="monthlyChart"></canvas>
     </div>
     <div class="col-md-6">
-        <canvas id="topProductChart"></canvas>
+      <canvas id="topProductChart"></canvas>
     </div>
 </div>
 
+<!-- Chart.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 const monthCtx = document.getElementById('monthlyChart').getContext('2d');
 new Chart(monthCtx, {
@@ -30,7 +99,7 @@ new Chart(monthCtx, {
             data: {{ monthly_sales|safe }},
             backgroundColor: 'rgba(54, 162, 235, 0.7)'
         }]
-    },
+    }
 });
 
 const productCtx = document.getElementById('topProductChart').getContext('2d');
@@ -43,7 +112,7 @@ new Chart(productCtx, {
             data: {{ product_qty|safe }},
             backgroundColor: ['#f66', '#6f6', '#66f', '#fc3', '#3cf']
         }]
-    },
+    }
 });
 </script>
 {% endblock %}

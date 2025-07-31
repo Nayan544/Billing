@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 from invoices.models import Invoice, InvoiceItem
 from customers.models import Customer
 from products.models import Product
-from django.db.models import Sum, Count
+from django.db.models import Sum, Q
 from django.utils.timezone import now
 from datetime import timedelta
 import calendar
@@ -30,12 +30,40 @@ def dashboard_view(request):
         monthly_sales.append(round(month_total, 2))
 
     # Top 5 selling products by quantity
-    top_products = (InvoiceItem.objects
-                    .values('product__name')
-                    .annotate(total_qty=Sum('quantity'))
-                    .order_by('-total_qty')[:5])
+    top_products = (
+        InvoiceItem.objects
+        .values('product__name')
+        .annotate(total_qty=Sum('quantity'))
+        .order_by('-total_qty')[:5]
+    )
     product_labels = [p['product__name'] for p in top_products]
     product_qty = [p['total_qty'] for p in top_products]
+
+    # 🔍 Search logic
+    query = request.GET.get('q')
+    customer_result = None
+    customer_invoices = None
+    product_result = None
+    product_invoice_items = None
+
+    if query:
+        # Search customer by name, contact, gstin
+        customer_result = Customer.objects.filter(
+            Q(name__icontains=query) |
+            Q(contact__icontains=query) |
+            Q(gstin__icontains=query)
+        ).first()
+
+        if customer_result:
+            customer_invoices = Invoice.objects.filter(customer=customer_result)
+
+        # Search product by name
+        product_result = Product.objects.filter(
+            name__icontains=query
+        ).first()
+
+        if product_result:
+            product_invoice_items = InvoiceItem.objects.filter(product=product_result)
 
     return render(request, 'dashboard/dashboard.html', {
         'total_customers': total_customers,
@@ -46,4 +74,9 @@ def dashboard_view(request):
         'monthly_sales': monthly_sales,
         'product_labels': product_labels,
         'product_qty': product_qty,
+        'query': query,
+        'customer_result': customer_result,
+        'customer_invoices': customer_invoices,
+        'product_result': product_result,
+        'product_invoice_items': product_invoice_items,
     })
